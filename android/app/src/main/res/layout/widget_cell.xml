@@ -1,0 +1,22 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:orientation="vertical"
+    android:gravity="center_horizontal">
+
+    <TextView
+        android:id="@+id/cellName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#d3a545"
+        android:textSize="11sp" />
+
+    <TextView
+        android:id="@+id/cellTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:textSize="13sp" />
+</LinearLayout>
