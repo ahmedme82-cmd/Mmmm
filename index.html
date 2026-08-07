@@ -4,9 +4,9 @@
      v3.1 — تحسين اتجاه النص (bidi):
        • نطاقات أوقات الكراهة: جزيرتا bdi مستقلتان (البداية يميناً والنهاية يساراً)
        • ساعة الهيدر: الفترة ص/م عنصر شقيق خارج الـ bdi
+     v3.2 — إزالة خط الـ24 ساعة + تصحيح تسمية الشروق (موعد وليس صلاة).
      البنية: styles.css / fonts.css / prayer-data.js / utils.js / data.js /
-             ui.js / table.js / karah.js / timeline.js / clock.js / pwa.js /
-             app.js / sw.js
+             ui.js / table.js / karah.js / clock.js / pwa.js / app.js / sw.js
      لم يُضَف: كائن CONFIG ولا الوضع الداكن (حسب الطلب).
 ============================================================= -->
 <html lang="ar" dir="rtl">
@@ -65,13 +65,6 @@
 </section>
 
 <main>
-  <section aria-label="خط اليوم الزمني">
-    <div class="tl-card">
-      <div class="tl-head"><h2>أربع وعشرون ساعة</h2><p>موقعك الآن بين الصلوات، والمناطق المظلّلة أوقات الكراهة</p></div>
-      <div class="tl" id="tl" dir="ltr"></div>
-    </div>
-  </section>
-
   <section>
     <div class="sec-head"><div><h2>مواقيت اليوم</h2><p id="todayLabel">—</p></div></div>
     <div class="cards" id="cards"></div>
@@ -137,9 +130,24 @@
 <script src="ui.js"></script>
 <script src="table.js"></script>
 <script src="karah.js"></script>
-<script src="timeline.js"></script>
 <script src="clock.js"></script>
 <script src="pwa.js"></script>
 <script src="app.js"></script>
+<script>
+/* v3.2: الشروق موعد وليس صلاة — تصحيح التسمية بجانب العدّاد */
+(function(){
+  var nameEl = document.getElementById('nextName');
+  var lblEl  = document.querySelector('.lbl');
+  var cdEl   = document.querySelector('.cd small');
+  if(!nameEl) return;
+  function fix(){
+    var isShorouk = (nameEl.textContent || '').indexOf('الشروق') !== -1;
+    if(lblEl) lblEl.textContent = isShorouk ? 'الموعد التالي' : 'الصلاة التالية';
+    if(cdEl)  cdEl.textContent  = isShorouk ? 'متبقي حتى الشروق' : 'متبقي حتى الصلاة';
+  }
+  fix();
+  new MutationObserver(fix).observe(nameEl, {childList:true, characterData:true, subtree:true});
+})();
+</script>
 </body>
 </html>
