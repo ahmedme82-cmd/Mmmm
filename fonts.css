@@ -1,0 +1,34 @@
+/* ============================================================
+   خط Cairo — محلياً أولاً ثم CDN احتياطاً.
+   لتجميع الخط محلياً (يعمل بلا إنترنت) نفّذ مرة واحدة:
+     mkdir fonts
+     for w in 400 600 700 900; do
+       curl -o fonts/arabic-$w-normal.woff2 https://cdn.jsdelivr.net/fontsource/fonts/cairo@latest/arabic-$w-normal.woff2
+       curl -o fonts/latin-$w-normal.woff2  https://cdn.jsdelivr.net/fontsource/fonts/cairo@latest/latin-$w-normal.woff2
+     done
+   إن غابت الملفات المحلية يُحمَّل البديل من CDN تلقائياً.
+============================================================ */
+@font-face{font-family:'Cairo';font-style:normal;font-weight:400;font-display:swap;
+  src:url('fonts/arabic-400-normal.woff2') format('woff2'),url('https://cdn.jsdelivr.net/fontsource/fonts/cairo@latest/arabic-400-normal.woff2') format('woff2');
+  unicode-range:U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0898-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+FB50-FDFF,U+FE70-FEFC}
+@font-face{font-family:'Cairo';font-style:normal;font-weight:600;font-display:swap;
+  src:url('fonts/arabic-600-normal.woff2') format('woff2'),url('https://cdn.jsdelivr.net/fontsource/fonts/cairo@latest/arabic-600-normal.woff2') format('woff2');
+  unicode-range:U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0898-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+FB50-FDFF,U+FE70-FEFC}
+@font-face{font-family:'Cairo';font-style:normal;font-weight:700;font-display:swap;
+  src:url('fonts/arabic-700-normal.woff2') format('woff2'),url('https://cdn.jsdelivr.net/fontsource/fonts/cairo@latest/arabic-700-normal.woff2') format('woff2');
+  unicode-range:U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0898-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+FB50-FDFF,U+FE70-FEFC}
+@font-face{font-family:'Cairo';font-style:normal;font-weight:900;font-display:swap;
+  src:url('fonts/arabic-900-normal.woff2') format('woff2'),url('https://cdn.jsdelivr.net/fontsource/fonts/cairo@latest/arabic-900-normal.woff2') format('woff2');
+  unicode-range:U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0898-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+FB50-FDFF,U+FE70-FEFC}
+@font-face{font-family:'Cairo';font-style:normal;font-weight:400;font-display:swap;
+  src:url('fonts/latin-400-normal.woff2') format('woff2'),url('https://cdn.jsdelivr.net/fontsource/fonts/cairo@latest/latin-400-normal.woff2') format('woff2');
+  unicode-range:U+0000-00FF,U+2000-206F,U+20AC,U+2122,U+2190-2193,U+2212}
+@font-face{font-family:'Cairo';font-style:normal;font-weight:600;font-display:swap;
+  src:url('fonts/latin-600-normal.woff2') format('woff2'),url('https://cdn.jsdelivr.net/fontsource/fonts/cairo@latest/latin-600-normal.woff2') format('woff2');
+  unicode-range:U+0000-00FF,U+2000-206F,U+20AC,U+2122,U+2190-2193,U+2212}
+@font-face{font-family:'Cairo';font-style:normal;font-weight:700;font-display:swap;
+  src:url('fonts/latin-700-normal.woff2') format('woff2'),url('https://cdn.jsdelivr.net/fontsource/fonts/cairo@latest/latin-700-normal.woff2') format('woff2');
+  unicode-range:U+0000-00FF,U+2000-206F,U+20AC,U+2122,U+2190-2193,U+2212}
+@font-face{font-family:'Cairo';font-style:normal;font-weight:900;font-display:swap;
+  src:url('fonts/latin-900-normal.woff2') format('woff2'),url('https://cdn.jsdelivr.net/fontsource/fonts/cairo@latest/latin-900-normal.woff2') format('woff2');
+  unicode-range:U+0000-00FF,U+2000-206F,U+20AC,U+2122,U+2190-2193,U+2212}
