@@ -1,0 +1,21 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:orientation="vertical"
+    android:gravity="center_horizontal">
+
+    <TextView
+        android:id="@+id/kName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#e6b354"
+        android:textSize="10sp" />
+
+    <TextView
+        android:id="@+id/kRange"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#CCFFFFFF"
+        android:textSize="10sp" />
+</LinearLayout>
