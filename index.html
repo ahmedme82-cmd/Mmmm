@@ -133,6 +133,58 @@
   <button class="m-pill" role="tab"></button>
 </template>
 
+<script>
+/* v3.4: إرسال المواقيت إلى ودجت الشاشة الرئيسية (عبر WidgetBridge) */
+(function(){
+  function to24(t, p){
+    var m = (t || '').match(/(\d{1,2}):(\d{2})/);
+    if(!m) return '';
+    var h = +m[1];
+    if((p || '').indexOf('م') !== -1 && h < 12) h += 12;
+    if((p || '').indexOf('ص') !== -1 && h === 12) h = 0;
+    return (h < 10 ? '0' : '') + h + ':' + m[2];
+  }
+  function collect(){
+    var prayers = [];
+    document.querySelectorAll('#cards .card').forEach(function(card){
+      var name = card.querySelector('h3');
+      var t = card.querySelector('.time bdi');
+      var p = card.querySelector('.time small');
+      if(name && t) prayers.push({
+        name: name.textContent.trim(),
+        display: t.textContent.trim() + (p && p.textContent.trim() ? ' ' + p.textContent.trim() : ''),
+        time: to24(t.textContent, p ? p.textContent : '')
+      });
+    });
+    var karaha = [];
+    document.querySelectorAll('#kChips .k-chip').forEach(function(chip){
+      var b = chip.querySelector('b');
+      var s = chip.querySelector('span');
+      if(b && s) karaha.push({ name: b.textContent.trim(), range: s.textContent.trim() });
+    });
+    var lbl = document.getElementById('todayLabel');
+    return {
+      day: new Date().toISOString().slice(0,10),
+      dateLabel: lbl ? lbl.textContent.trim() : '',
+      prayers: prayers,
+      karaha: karaha
+    };
+  }
+  function send(){
+    var C = window.Capacitor;
+    if(!(C && C.Plugins && C.Plugins.WidgetBridge)) return;
+    var data = collect();
+    if(!data.prayers.length) return;
+    C.Plugins.WidgetBridge.updateWidget({ json: JSON.stringify(data) });
+  }
+  function boot(){
+    if(document.querySelectorAll('#cards .card').length){ send(); }
+    else { setTimeout(boot, 1000); }
+  }
+  boot();
+  setInterval(send, 60000);
+})();
+</script>
 <script src="prayer-data.js"></script>
 <script src="utils.js"></script>
 <script src="data.js"></script>
