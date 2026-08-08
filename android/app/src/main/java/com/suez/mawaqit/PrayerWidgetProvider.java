@@ -59,7 +59,8 @@ public class PrayerWidgetProvider extends AppWidgetProvider {
 
         if (json == null) {
             views.setTextViewText(R.id.widgetDate, "افتح التطبيق لتحميل المواقيت");
-            views.setTextViewText(R.id.widgetNext, "");
+            views.setTextViewText(R.id.widgetNextName, "—");
+            views.setTextViewText(R.id.widgetCountdown, "");
             mgr.updateAppWidget(id, views);
             return;
         }
@@ -68,25 +69,14 @@ public class PrayerWidgetProvider extends AppWidgetProvider {
             JSONObject data = new JSONObject(json);
             views.setTextViewText(R.id.widgetDate, data.optString("dateLabel", ""));
 
-            JSONArray prayers = data.optJSONArray("prayers");
-            views.removeAllViews(R.id.prayerRow1);
-            views.removeAllViews(R.id.prayerRow2);
-
-            JSONArray karaha = data.optJSONArray("karaha");
-            views.removeAllViews(R.id.karahRow);
-
             Calendar now = Calendar.getInstance();
             Calendar next = null;
             String nextName = null;
 
+            JSONArray prayers = data.optJSONArray("prayers");
             if (prayers != null) {
                 for (int i = 0; i < prayers.length(); i++) {
                     JSONObject p = prayers.getJSONObject(i);
-                    RemoteViews cell = new RemoteViews(context.getPackageName(), R.layout.widget_cell);
-                    cell.setTextViewText(R.id.cellName, p.optString("name", ""));
-                    cell.setTextViewText(R.id.cellTime, p.optString("display", ""));
-                    views.addView(i < 3 ? R.id.prayerRow1 : R.id.prayerRow2, cell);
-
                     String t = p.optString("time", "");
                     try {
                         String[] hm = t.split(":");
@@ -102,6 +92,34 @@ public class PrayerWidgetProvider extends AppWidgetProvider {
                 }
             }
 
+            if (next != null && nextName != null) {
+                long diff = next.getTimeInMillis() - now.getTimeInMillis();
+                int mins = (int) (diff / 60000);
+                views.setTextViewText(R.id.widgetNextName, nextName);
+                views.setTextViewText(R.id.widgetCountdown,
+                        String.format(Locale.US, "%02d:%02d", mins / 60, mins % 60));
+            } else {
+                views.setTextViewText(R.id.widgetNextName, "غدًا");
+                views.setTextViewText(R.id.widgetCountdown, "—");
+            }
+
+            views.removeAllViews(R.id.prayerRow1);
+            views.removeAllViews(R.id.prayerRow2);
+            if (prayers != null) {
+                for (int i = 0; i < prayers.length(); i++) {
+                    JSONObject p = prayers.getJSONObject(i);
+                    RemoteViews cell = new RemoteViews(context.getPackageName(), R.layout.widget_cell);
+                    cell.setTextViewText(R.id.cellName, p.optString("name", ""));
+                    cell.setTextViewText(R.id.cellTime, p.optString("display", ""));
+                    if (p.optString("name", "").equals(nextName)) {
+                        cell.setInt(R.id.cellRoot, "setBackgroundResource", R.drawable.widget_cell_next);
+                    }
+                    views.addView(i < 3 ? R.id.prayerRow1 : R.id.prayerRow2, cell);
+                }
+            }
+
+            JSONArray karaha = data.optJSONArray("karaha");
+            views.removeAllViews(R.id.karahRow);
             if (karaha != null) {
                 for (int i = 0; i < karaha.length(); i++) {
                     JSONObject k = karaha.getJSONObject(i);
@@ -111,18 +129,8 @@ public class PrayerWidgetProvider extends AppWidgetProvider {
                     views.addView(R.id.karahRow, cell);
                 }
             }
-
-            if (next != null && nextName != null) {
-                long diff = next.getTimeInMillis() - now.getTimeInMillis();
-                int mins = (int) (diff / 60000);
-                String label = nextName.contains("شروق") ? "الموعد التالي" : "الصلاة التالية";
-                views.setTextViewText(R.id.widgetNext,
-                        label + ": " + nextName + " — باقي " + String.format(Locale.US, "%02d:%02d", mins / 60, mins % 60));
-            } else {
-                views.setTextViewText(R.id.widgetNext, "انتهت مواقيت اليوم — افتح التطبيق لتحديث الغد");
-            }
         } catch (Exception e) {
-            views.setTextViewText(R.id.widgetNext, "تعذر قراءة البيانات");
+            views.setTextViewText(R.id.widgetDate, "تعذر قراءة البيانات");
         }
 
         mgr.updateAppWidget(id, views);
