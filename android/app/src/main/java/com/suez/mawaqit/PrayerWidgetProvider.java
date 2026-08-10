@@ -249,8 +249,22 @@ public class PrayerWidgetProvider extends AppWidgetProvider {
                 views.setTextViewText(R.id.widgetNextName, nextName);
                 views.setTextViewText(R.id.widgetCountdown, String.format(Locale.US, "%02d:%02d", df/60, df%60));
             } else {
-                views.setTextViewText(R.id.widgetNextName, "غدًا");
-                views.setTextViewText(R.id.widgetCountdown, "—");
+                String ft = data.optString("fajrTomorrow", "");
+                boolean done = false;
+                if (!ft.isEmpty()) {
+                    try {
+                        String[] hm = ft.split(":");
+                        int fm = Integer.parseInt(hm[0])*60 + Integer.parseInt(hm[1]);
+                        int df = (1440 - nowMins) + fm;
+                        views.setTextViewText(R.id.widgetNextName, "فجر غدًا");
+                        views.setTextViewText(R.id.widgetCountdown, String.format(Locale.US, "%02d:%02d", df/60, df%60));
+                        done = true;
+                    } catch (Exception ignored) {}
+                }
+                if (!done) {
+                    views.setTextViewText(R.id.widgetNextName, "غدًا");
+                    views.setTextViewText(R.id.widgetCountdown, "—");
+                }
             }
 
             Map<String,Integer> timeIds = new HashMap<>();
