@@ -249,7 +249,7 @@
 })();
 </script>
 <script>
-/* ===== قوس الشمس (v4.1) مع مناطق الكراهة على المسار ===== */
+/* ===== قوس الشمس (v4.3) دورة كاملة: قوس النهار + قوس الليل ===== */
 (function(){
   var NS='http://www.w3.org/2000/svg';
   function to24(t,p){var m=(t||'').match(/(\d{1,2}):(\d{2})/);if(!m)return'';var h=+m[1];if((p||'').indexOf('م')!==-1&&h<12)h+=12;if((p||'').indexOf('ص')!==-1&&h===12)h=0;return(h<10?'0':'')+h+':'+m[2];}
@@ -260,8 +260,8 @@
     function mk(h,mi,p){h=+h;if(p==='م'&&h<12)h+=12;if(p==='ص'&&h===12)h=0;return h*60+(+mi);}
     return {a:mk(m[1],m[2],m[5]),b:mk(m[3],m[4],m[5])};
   }
-  var P0={x:940,y:360},P1={x:60,y:360},C={x:500,y:10};
-  function pt(t){var u=1-t;return{x:u*u*P0.x+2*u*t*C.x+t*t*P1.x,y:u*u*P0.y+2*u*t*C.y+t*t*P1.y};}
+  var P0={x:940,y:340},P1={x:60,y:340},CD={x:500,y:20},CN={x:500,y:620};
+  function pt(t,A,C,B){var u=1-t;return{x:u*u*A.x+2*u*t*C.x+t*t*B.x,y:u*u*A.y+2*u*t*C.y+t*t*B.y};}
   function scrape(){
     var out=[];
     document.querySelectorAll('#cards .card').forEach(function(card){
@@ -283,9 +283,12 @@
     if(list.length<6){setTimeout(build,1000);return;}
     var M={};list.forEach(function(x){M[x.name]=toMin(x.time);});
     var rise=M['شروق'],set=M['مغرب'];
-    var d='M'+P0.x+' '+P0.y+' Q'+C.x+' '+C.y+' '+P1.x+' '+P1.y;
-    document.getElementById('sbArc').setAttribute('d',d);
-    var prog=document.getElementById('sbProg');prog.setAttribute('d',d);
+    var nightSpan=1440-(set-rise);
+    function tN(m){var e=(m>=set)?(m-set):(1440-set+m);return e/nightSpan;}
+    document.getElementById('sbArc').setAttribute('d','M'+P0.x+' '+P0.y+' Q'+CD.x+' '+CD.y+' '+P1.x+' '+P1.y);
+    document.getElementById('sbArcN').setAttribute('d','M'+P1.x+' '+P1.y+' Q'+CN.x+' '+CN.y+' '+P0.x+' '+P0.y);
+    var prog=document.getElementById('sbProg');prog.setAttribute('d','M'+P0.x+' '+P0.y+' Q'+CD.x+' '+CD.y+' '+P1.x+' '+P1.y);
+    var progN=document.getElementById('sbProgN');progN.setAttribute('d','M'+P1.x+' '+P1.y+' Q'+CN.x+' '+CN.y+' '+P0.x+' '+P0.y);
     var gK=document.getElementById('sbKseg'),g=document.getElementById('sbDots');
     var klist=scrapeK();
     klist.forEach(function(k){
@@ -294,18 +297,29 @@
       var t2=Math.max(0,Math.min(1,(r.b-rise)/(set-rise)));
       if(t2<=t1)return;
       var ds='',N=24;
-      for(var i=0;i<=N;i++){var t=t1+(t2-t1)*i/N,q=pt(t);ds+=(i?'L':'M')+q.x.toFixed(1)+' '+q.y.toFixed(1)+' ';}
+      for(var i=0;i<=N;i++){var t=t1+(t2-t1)*i/N,q=pt(t,P0,CD,P1);ds+=(i?'L':'M')+q.x.toFixed(1)+' '+q.y.toFixed(1)+' ';}
       var p=document.createElementNS(NS,'path');
       p.setAttribute('d',ds);p.setAttribute('class','sb-kseg');
       gK.appendChild(p);
     });
     ['شروق','ظهر','عصر','مغرب'].forEach(function(n){
-      var t=(M[n]-rise)/(set-rise),q=pt(t);
+      var t=(M[n]-rise)/(set-rise),q=pt(t,P0,CD,P1);
       var c=document.createElementNS(NS,'circle');
       c.setAttribute('cx',q.x);c.setAttribute('cy',q.y);c.setAttribute('r',10);
       c.setAttribute('class','sb-dot');g.appendChild(c);
       var tx=document.createElementNS(NS,'text');
-      tx.setAttribute('x',q.x);tx.setAttribute('y',q.y+52);
+      tx.setAttribute('x',q.x);tx.setAttribute('y',(n==='شروق'||n==='مغرب')?q.y-24:q.y+52);
+      tx.setAttribute('text-anchor','middle');tx.setAttribute('class','sb-lbl');
+      tx.textContent=n;g.appendChild(tx);
+    });
+    ['عشاء','فجر'].forEach(function(n){
+      var t=tN(M[n]),q=pt(t,P1,CN,P0);
+      var c=document.createElementNS(NS,'circle');
+      c.setAttribute('cx',q.x);c.setAttribute('cy',q.y);c.setAttribute('r',9);
+      c.setAttribute('fill','#0b3d36');c.setAttribute('stroke','#bfd8e0');c.setAttribute('stroke-width','5');
+      g.appendChild(c);
+      var tx=document.createElementNS(NS,'text');
+      tx.setAttribute('x',q.x);tx.setAttribute('y',q.y+46);
       tx.setAttribute('text-anchor','middle');tx.setAttribute('class','sb-lbl');
       tx.textContent=n;g.appendChild(tx);
     });
@@ -316,17 +330,29 @@
       dv.appendChild(b);dv.appendChild(document.createTextNode(' '+k.range));
       kwrap.appendChild(dv);
     });
-    var L=prog.getTotalLength();
+    var L=prog.getTotalLength(),Ln=progN.getTotalLength();
     prog.setAttribute('stroke-dasharray',L);
-    var sun=document.getElementById('sbSun');
+    progN.setAttribute('stroke-dasharray',Ln);
+    var sun=document.getElementById('sbSun'),moon=document.getElementById('sbMoon');
     var periodEl=document.getElementById('sbPeriod'),chipEl=document.getElementById('sbChip');
     function tick(){
       var now=new Date(),nm=now.getHours()*60+now.getMinutes();
-      var t=(nm-rise)/(set-rise),tc=Math.max(0,Math.min(1,t));
-      prog.setAttribute('stroke-dashoffset',L*(1-tc));
-      var q=pt(tc);
-      sun.setAttribute('transform','translate('+q.x+' '+q.y+')');
-      sun.setAttribute('opacity',(t<0||t>1)?0.35:1);
+      var isDay=(nm>=rise&&nm<set);
+      if(isDay){
+        var tc=(nm-rise)/(set-rise);
+        prog.setAttribute('stroke-dashoffset',L*(1-tc));
+        progN.setAttribute('stroke-dashoffset',Ln);
+        var q=pt(tc,P0,CD,P1);
+        sun.setAttribute('transform','translate('+q.x+' '+q.y+')');sun.setAttribute('opacity',1);
+        moon.setAttribute('opacity',0);
+      }else{
+        prog.setAttribute('stroke-dashoffset',0);
+        var tn=tN(nm);
+        progN.setAttribute('stroke-dashoffset',Ln*(1-tn));
+        var qn=pt(tn,P1,CN,P0);
+        moon.setAttribute('transform','translate('+qn.x+' '+qn.y+')');moon.setAttribute('opacity',1);
+        sun.setAttribute('opacity',0);
+      }
       periodEl.textContent = nm<M['فجر']?'الليل': nm<rise?'الفجر': nm<M['ظهر']?'الضحى': nm<M['عصر']?'الظهر': nm<set?'العصر': nm<M['عشاء']?'المغرب':'الليل';
       var order=['فجر','شروق','ظهر','عصر','مغرب','عشاء'],nextN=null;
       for(var i=0;i<order.length;i++){if(M[order[i]]>nm){nextN=order[i];break;}}
