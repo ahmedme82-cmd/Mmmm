@@ -1,15 +1,10 @@
 <!DOCTYPE html>
 <!-- ============================================================
      مواقيت الصلاة — السويس | أغسطس–ديسمبر 2026 (نسخة معيارية PWA)
-     v3.1 — تحسين اتجاه النص (bidi):
-       • نطاقات أوقات الكراهة: جزيرتا bdi مستقلتان (البداية يميناً والنهاية يساراً)
-       • ساعة الهيدر: الفترة ص/م عنصر شقيق خارج الـ bdi
+     v3.1 — تحسين اتجاه النص (bidi).
      v3.2 — تصحيح تسمية الشروق (موعد وليس صلاة).
      v3.3 — إخفاء خط الـ24 ساعة (بدل حذفه لأن app.js يعتمد عليه).
-     البنية: styles.css / fonts.css / prayer-data.js / utils.js / data.js /
-             ui.js / table.js / karah.js / timeline.js / clock.js / pwa.js /
-             app.js / sw.js
-     لم يُضَف: كائن CONFIG ولا الوضع الداكن (حسب الطلب).
+     v4.1 — قوس الشمس: مسار الشمس + مناطق الكراهة على القوس.
 ============================================================= -->
 <html lang="ar" dir="rtl">
 <head>
@@ -31,6 +26,42 @@
     </div>
   </div>
 </header>
+
+<style>
+/* ===== قوس الشمس (v4.1) ===== */
+.sunband{background:linear-gradient(180deg,#0f4d42 0%,#0b3d36 100%);padding:20px 16px 4px;}
+.sunband-in{max-width:1000px;margin:0 auto;}
+.sb-period{font-size:34px;font-weight:800;color:#ffffff;line-height:1.1;}
+.sb-chip{display:inline-block;margin-top:10px;background:rgba(255,255,255,.08);border:1px solid rgba(211,165,69,.35);color:#ffd98a;border-radius:999px;padding:7px 16px;font-size:14px;}
+#sbSvg{width:100%;height:auto;display:block;margin-top:6px;}
+.sb-lbl{fill:rgba(255,255,255,.72);font-size:26px;font-weight:700;}
+.sb-dot{fill:#0b3d36;stroke:#d3a545;stroke-width:5;}
+.sb-kseg{stroke:#c46a5a;stroke-width:10;fill:none;opacity:.7;stroke-linecap:round;}
+.sb-karah{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:2px 0 14px;}
+.sb-kpill{background:rgba(196,106,90,.15);border:1px solid rgba(196,106,90,.45);border-radius:999px;padding:4px 12px;font-size:12px;color:#ffab91;}
+.sb-kpill b{color:#ffccbc;font-weight:700;margin-inline-end:4px;}
+/* الكراهة انتقلت إلى القوس — إخفاء الكتلة القديمة */
+.karah{display:none;}
+</style>
+
+<section class="sunband" aria-label="مسار الشمس اليوم">
+  <div class="sunband-in">
+    <div class="sb-period" id="sbPeriod">—</div>
+    <div class="sb-chip" id="sbChip">—</div>
+    <svg id="sbSvg" viewBox="0 0 1000 430" preserveAspectRatio="xMidYMid meet">
+      <line x1="40" y1="360" x2="960" y2="360" stroke="rgba(255,255,255,.12)" stroke-width="2" stroke-dasharray="4 10"/>
+      <path id="sbArc" fill="none" stroke="rgba(255,255,255,.16)" stroke-width="4" stroke-linecap="round"/>
+      <path id="sbProg" fill="none" stroke="#d3a545" stroke-width="7" stroke-linecap="round"/>
+      <g id="sbKseg"></g>
+      <g id="sbDots"></g>
+      <g id="sbSun">
+        <circle r="26" fill="rgba(211,165,69,.22)"/>
+        <circle r="11" fill="#e6b354" stroke="#fff3d6" stroke-width="3"/>
+      </g>
+    </svg>
+    <div class="sb-karah" id="sbKarah"></div>
+  </div>
+</section>
 
 <section class="hero">
   <div class="hero-in">
@@ -133,6 +164,32 @@
   <button class="m-pill" role="tab"></button>
 </template>
 
+<script src="prayer-data.js"></script>
+<script src="utils.js"></script>
+<script src="data.js"></script>
+<script src="ui.js"></script>
+<script src="table.js"></script>
+<script src="karah.js"></script>
+<script src="timeline.js"></script>
+<script src="clock.js"></script>
+<script src="pwa.js"></script>
+<script src="app.js"></script>
+<script>
+/* v3.2: الشروق موعد وليس صلاة — تصحيح التسمية بجانب العدّاد */
+(function(){
+  var nameEl = document.getElementById('nextName');
+  var lblEl  = document.querySelector('.lbl');
+  var cdEl   = document.querySelector('.cd small');
+  if(!nameEl) return;
+  function fix(){
+    var isShorouk = (nameEl.textContent || '').indexOf('الشروق') !== -1;
+    if(lblEl) lblEl.textContent = isShorouk ? 'الموعد التالي' : 'الصلاة التالية';
+    if(cdEl)  cdEl.textContent  = isShorouk ? 'متبقي حتى الشروق' : 'متبقي حتى الصلاة';
+  }
+  fix();
+  new MutationObserver(fix).observe(nameEl, {childList:true, characterData:true, subtree:true});
+})();
+</script>
 <script>
 /* v3.4: إرسال المواقيت إلى ودجت الشاشة الرئيسية (عبر WidgetBridge) */
 (function(){
@@ -185,30 +242,96 @@
   setInterval(send, 60000);
 })();
 </script>
-<script src="prayer-data.js"></script>
-<script src="utils.js"></script>
-<script src="data.js"></script>
-<script src="ui.js"></script>
-<script src="table.js"></script>
-<script src="karah.js"></script>
-<script src="timeline.js"></script>
-<script src="clock.js"></script>
-<script src="pwa.js"></script>
-<script src="app.js"></script>
 <script>
-/* v3.2: الشروق موعد وليس صلاة — تصحيح التسمية بجانب العدّاد */
+/* ===== قوس الشمس (v4.1) مع مناطق الكراهة على المسار ===== */
 (function(){
-  var nameEl = document.getElementById('nextName');
-  var lblEl  = document.querySelector('.lbl');
-  var cdEl   = document.querySelector('.cd small');
-  if(!nameEl) return;
-  function fix(){
-    var isShorouk = (nameEl.textContent || '').indexOf('الشروق') !== -1;
-    if(lblEl) lblEl.textContent = isShorouk ? 'الموعد التالي' : 'الصلاة التالية';
-    if(cdEl)  cdEl.textContent  = isShorouk ? 'متبقي حتى الشروق' : 'متبقي حتى الصلاة';
+  var NS='http://www.w3.org/2000/svg';
+  function to24(t,p){var m=(t||'').match(/(\d{1,2}):(\d{2})/);if(!m)return'';var h=+m[1];if((p||'').indexOf('م')!==-1&&h<12)h+=12;if((p||'').indexOf('ص')!==-1&&h===12)h=0;return(h<10?'0':'')+h+':'+m[2];}
+  function toMin(t){return (+t.slice(0,2))*60+(+t.slice(3));}
+  function parseRange(s){
+    var m=(s||'').match(/(\d{1,2}):(\d{2})\s*[-–]\s*(\d{1,2}):(\d{2})\s*(ص|م)/);
+    if(!m)return null;
+    function mk(h,mi,p){h=+h;if(p==='م'&&h<12)h+=12;if(p==='ص'&&h===12)h=0;return h*60+(+mi);}
+    return {a:mk(m[1],m[2],m[5]),b:mk(m[3],m[4],m[5])};
   }
-  fix();
-  new MutationObserver(fix).observe(nameEl, {childList:true, characterData:true, subtree:true});
+  var P0={x:940,y:360},P1={x:60,y:360},C={x:500,y:10};
+  function pt(t){var u=1-t;return{x:u*u*P0.x+2*u*t*C.x+t*t*P1.x,y:u*u*P0.y+2*u*t*C.y+t*t*P1.y};}
+  function scrape(){
+    var out=[];
+    document.querySelectorAll('#cards .card').forEach(function(card){
+      var n=card.querySelector('h3'),t=card.querySelector('.time bdi'),p=card.querySelector('.time small');
+      if(n&&t)out.push({name:n.textContent.trim(),time:to24(t.textContent,p?p.textContent:'')});
+    });
+    return out;
+  }
+  function scrapeK(){
+    var out=[];
+    document.querySelectorAll('#kChips .k-chip').forEach(function(ch){
+      var b=ch.querySelector('b'),s=ch.querySelector('span');
+      if(b&&s)out.push({name:b.textContent.trim(),range:s.textContent.trim()});
+    });
+    return out;
+  }
+  function build(){
+    var list=scrape();
+    if(list.length<6){setTimeout(build,1000);return;}
+    var M={};list.forEach(function(x){M[x.name]=toMin(x.time);});
+    var rise=M['شروق'],set=M['مغرب'];
+    var d='M'+P0.x+' '+P0.y+' Q'+C.x+' '+C.y+' '+P1.x+' '+P1.y;
+    document.getElementById('sbArc').setAttribute('d',d);
+    var prog=document.getElementById('sbProg');prog.setAttribute('d',d);
+    var gK=document.getElementById('sbKseg'),g=document.getElementById('sbDots');
+    var klist=scrapeK();
+    klist.forEach(function(k){
+      var r=parseRange(k.range);if(!r)return;
+      var t1=Math.max(0,Math.min(1,(r.a-rise)/(set-rise)));
+      var t2=Math.max(0,Math.min(1,(r.b-rise)/(set-rise)));
+      if(t2<=t1)return;
+      var ds='',N=24;
+      for(var i=0;i<=N;i++){var t=t1+(t2-t1)*i/N,q=pt(t);ds+=(i?'L':'M')+q.x.toFixed(1)+' '+q.y.toFixed(1)+' ';}
+      var p=document.createElementNS(NS,'path');
+      p.setAttribute('d',ds);p.setAttribute('class','sb-kseg');
+      gK.appendChild(p);
+    });
+    ['شروق','ظهر','عصر','مغرب'].forEach(function(n){
+      var t=(M[n]-rise)/(set-rise),q=pt(t);
+      var c=document.createElementNS(NS,'circle');
+      c.setAttribute('cx',q.x);c.setAttribute('cy',q.y);c.setAttribute('r',10);
+      c.setAttribute('class','sb-dot');g.appendChild(c);
+      var tx=document.createElementNS(NS,'text');
+      tx.setAttribute('x',q.x);tx.setAttribute('y',q.y+52);
+      tx.setAttribute('text-anchor','middle');tx.setAttribute('class','sb-lbl');
+      tx.textContent=n;g.appendChild(tx);
+    });
+    var kwrap=document.getElementById('sbKarah');
+    klist.forEach(function(k){
+      var dv=document.createElement('div');dv.className='sb-kpill';
+      var b=document.createElement('b');b.textContent=k.name;
+      dv.appendChild(b);dv.appendChild(document.createTextNode(' '+k.range));
+      kwrap.appendChild(dv);
+    });
+    var L=prog.getTotalLength();
+    prog.setAttribute('stroke-dasharray',L);
+    var sun=document.getElementById('sbSun');
+    var periodEl=document.getElementById('sbPeriod'),chipEl=document.getElementById('sbChip');
+    function tick(){
+      var now=new Date(),nm=now.getHours()*60+now.getMinutes();
+      var t=(nm-rise)/(set-rise),tc=Math.max(0,Math.min(1,t));
+      prog.setAttribute('stroke-dashoffset',L*(1-tc));
+      var q=pt(tc);
+      sun.setAttribute('transform','translate('+q.x+' '+q.y+')');
+      sun.setAttribute('opacity',(t<0||t>1)?0.35:1);
+      periodEl.textContent = nm<M['فجر']?'الليل': nm<rise?'الفجر': nm<M['ظهر']?'الضحى': nm<M['عصر']?'الظهر': nm<set?'العصر': nm<M['عشاء']?'المغرب':'الليل';
+      var order=['فجر','شروق','ظهر','عصر','مغرب','عشاء'],nextN=null;
+      for(var i=0;i<order.length;i++){if(M[order[i]]>nm){nextN=order[i];break;}}
+      if(nextN){
+        var df=M[nextN]-nm,h=Math.floor(df/60),m=df%60;
+        chipEl.textContent='باقي '+(h>0?h+' س ':'')+m+' د حتى '+nextN;
+      }else chipEl.textContent='حتى فجر الغد';
+    }
+    tick();setInterval(tick,30000);
+  }
+  build();
 })();
 </script>
 </body>
