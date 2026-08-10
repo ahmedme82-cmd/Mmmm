@@ -62,33 +62,40 @@ public class PrayerWidgetProvider extends AppWidgetProvider {
         am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 60000, 60000, pi);
     }
 
-    private static float[] pt(float t, float x0, float y0, float cx, float cy, float x1, float y1) {
+    private static float[] pt(float t, float ax, float ay, float cx, float cy, float bx, float by) {
         float u = 1 - t;
-        return new float[]{u*u*x0 + 2*u*t*cx + t*t*x1, u*u*y0 + 2*u*t*cy + t*t*y1};
+        return new float[]{u*u*ax + 2*u*t*cx + t*t*bx, u*u*ay + 2*u*t*cy + t*t*by};
     }
 
     private static Bitmap buildArc(int rise, int set, int nowMins, Map<String,Integer> M, List<int[]> kar) {
-        int W = 800, H = 250;
+        int W = 800, H = 400;
         Bitmap bmp = Bitmap.createBitmap(W, H, Bitmap.Config.ARGB_8888);
         Canvas cv = new Canvas(bmp);
-        float x0=760, y0=195, x1=40, y1=195, cx=400, cy=8;
+        float x0=760, y0=235, x1=40, y1=235, cdx=400, cdy=8, cnx=400, cny=455;
         float span = Math.max(1, set - rise);
+        float nightSpan = Math.max(1, 1440 - (set - rise));
 
         Paint horizon = new Paint(Paint.ANTI_ALIAS_FLAG);
         horizon.setStyle(Paint.Style.STROKE); horizon.setStrokeWidth(2);
         horizon.setColor(0x1FFFFFFF); horizon.setPathEffect(new DashPathEffect(new float[]{4,10},0));
         cv.drawLine(30, y0, 770, y0, horizon);
 
-        Path full = new Path();
-        full.moveTo(x0, y0); full.quadTo(cx, cy, x1, y1);
+        Path day = new Path();   day.moveTo(x0,y0);   day.quadTo(cdx,cdy,x1,y1);
+        Path night = new Path(); night.moveTo(x1,y1); night.quadTo(cnx,cny,x0,y0);
 
         Paint faint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        faint.setStyle(Paint.Style.STROKE); faint.setStrokeWidth(5);
+        faint.setStyle(Paint.Style.STROKE); faint.setStrokeWidth(4);
         faint.setColor(0x29FFFFFF); faint.setStrokeCap(Paint.Cap.ROUND);
-        cv.drawPath(full, faint);
+        cv.drawPath(day, faint);
 
-        PathMeasure pm = new PathMeasure(full, false);
-        float len = pm.getLength();
+        Paint faintN = new Paint(Paint.ANTI_ALIAS_FLAG);
+        faintN.setStyle(Paint.Style.STROKE); faintN.setStrokeWidth(4);
+        faintN.setColor(0x1AFFFFFF); faintN.setStrokeCap(Paint.Cap.ROUND);
+        faintN.setPathEffect(new DashPathEffect(new float[]{2,10},0));
+        cv.drawPath(night, faintN);
+
+        PathMeasure pmD = new PathMeasure(day, false);   float lenD = pmD.getLength();
+        PathMeasure pmN = new PathMeasure(night, false); float lenN = pmN.getLength();
 
         Paint terra = new Paint(Paint.ANTI_ALIAS_FLAG);
         terra.setStyle(Paint.Style.STROKE); terra.setStrokeWidth(11);
@@ -98,45 +105,82 @@ public class PrayerWidgetProvider extends AppWidgetProvider {
             float t2 = Math.max(0, Math.min(1, (r[1]-rise)/span));
             if (t2 <= t1) continue;
             Path seg = new Path();
-            pm.getSegment(len*t1, len*t2, seg, true);
+            pmD.getSegment(lenD*t1, lenD*t2, seg, true);
             cv.drawPath(seg, terra);
         }
 
+        boolean isDay = nowMins >= rise && nowMins < set;
         float tc = Math.max(0, Math.min(1, (nowMins-rise)/span));
-        if (tc > 0.002f) {
-            Paint gold = new Paint(Paint.ANTI_ALIAS_FLAG);
-            gold.setStyle(Paint.Style.STROKE); gold.setStrokeWidth(8);
-            gold.setColor(0xFFD3A545); gold.setStrokeCap(Paint.Cap.ROUND);
-            Path prog = new Path();
-            pm.getSegment(0, len*tc, prog, true);
-            cv.drawPath(prog, gold);
+        float eN = (nowMins >= set) ? (nowMins-set) : (1440-set+nowMins);
+        float tn = Math.max(0, Math.min(1, eN/nightSpan));
+
+        Paint gold = new Paint(Paint.ANTI_ALIAS_FLAG);
+        gold.setStyle(Paint.Style.STROKE); gold.setStrokeWidth(8);
+        gold.setColor(0xFFD3A545); gold.setStrokeCap(Paint.Cap.ROUND);
+        Paint silver = new Paint(Paint.ANTI_ALIAS_FLAG);
+        silver.setStyle(Paint.Style.STROKE); silver.setStrokeWidth(6);
+        silver.setColor(0xFFBFD8E0); silver.setStrokeCap(Paint.Cap.ROUND);
+
+        if (isDay) {
+            if (tc > 0.002f) { Path p = new Path(); pmD.getSegment(0, lenD*tc, p, true); cv.drawPath(p, gold); }
+        } else {
+            cv.drawPath(day, gold);
+            if (tn > 0.002f) { Path p = new Path(); pmN.getSegment(0, lenN*tn, p, true); cv.drawPath(p, silver); }
         }
 
-        Paint dotStroke = new Paint(Paint.ANTI_ALIAS_FLAG);
-        dotStroke.setStyle(Paint.Style.STROKE); dotStroke.setStrokeWidth(5); dotStroke.setColor(0xFFD3A545);
         Paint dotFill = new Paint(Paint.ANTI_ALIAS_FLAG);
         dotFill.setStyle(Paint.Style.FILL); dotFill.setColor(0xFF0B3D36);
+        Paint dotGold = new Paint(Paint.ANTI_ALIAS_FLAG);
+        dotGold.setStyle(Paint.Style.STROKE); dotGold.setStrokeWidth(5); dotGold.setColor(0xFFD3A545);
+        Paint dotSilver = new Paint(Paint.ANTI_ALIAS_FLAG);
+        dotSilver.setStyle(Paint.Style.STROKE); dotSilver.setStrokeWidth(5); dotSilver.setColor(0xFFBFD8E0);
         Paint lbl = new Paint(Paint.ANTI_ALIAS_FLAG);
-        lbl.setColor(0xB3FFFFFF); lbl.setTextSize(26); lbl.setTextAlign(Paint.Align.CENTER);
-        String[] names = {"شروق","ظهر","عصر","مغرب"};
-        for (String n : names) {
+        lbl.setColor(0xB3FFFFFF); lbl.setTextSize(22); lbl.setTextAlign(Paint.Align.CENTER);
+
+        String[] dayNames = {"شروق","ظهر","عصر","مغرب"};
+        for (String n : dayNames) {
             Integer mv = M.get(n); if (mv == null) continue;
-            float[] q = pt((mv-rise)/span, x0,y0,cx,cy,x1,y1);
-            cv.drawCircle(q[0], q[1], 9, dotFill);
-            cv.drawCircle(q[0], q[1], 9, dotStroke);
-            cv.drawText(n, q[0], q[1]+42, lbl);
+            float t = (mv-rise)/span;
+            float[] q = pt(t, x0,y0, cdx,cdy, x1,y1);
+            cv.drawCircle(q[0], q[1], 8, dotFill);
+            cv.drawCircle(q[0], q[1], 8, dotGold);
+            boolean edge = n.equals("شروق") || n.equals("مغرب");
+            cv.drawText(n, q[0], edge ? q[1]-18 : q[1]+34, lbl);
+        }
+        String[] nightNames = {"عشاء","فجر"};
+        for (String n : nightNames) {
+            Integer mv = M.get(n); if (mv == null) continue;
+            float ee = (mv >= set) ? (mv-set) : (1440-set+mv);
+            float t = Math.max(0, Math.min(1, ee/nightSpan));
+            float[] q = pt(t, x1,y1, cnx,cny, x0,y0);
+            cv.drawCircle(q[0], q[1], 8, dotFill);
+            cv.drawCircle(q[0], q[1], 8, dotSilver);
+            cv.drawText(n, q[0], q[1]+34, lbl);
         }
 
-        float[] s = pt(tc, x0,y0,cx,cy,x1,y1);
-        Paint glow = new Paint(Paint.ANTI_ALIAS_FLAG);
-        glow.setStyle(Paint.Style.FILL); glow.setColor(0x38D3A545);
-        cv.drawCircle(s[0], s[1], 20, glow);
-        Paint sunF = new Paint(Paint.ANTI_ALIAS_FLAG);
-        sunF.setStyle(Paint.Style.FILL); sunF.setColor(0xFFE6B354);
-        cv.drawCircle(s[0], s[1], 9, sunF);
-        Paint ring = new Paint(Paint.ANTI_ALIAS_FLAG);
-        ring.setStyle(Paint.Style.STROKE); ring.setStrokeWidth(3); ring.setColor(0xFFFFF3D6);
-        cv.drawCircle(s[0], s[1], 9, ring);
+        if (isDay) {
+            float[] s = pt(tc, x0,y0, cdx,cdy, x1,y1);
+            Paint glow = new Paint(Paint.ANTI_ALIAS_FLAG);
+            glow.setStyle(Paint.Style.FILL); glow.setColor(0x38D3A545);
+            cv.drawCircle(s[0], s[1], 18, glow);
+            Paint sf = new Paint(Paint.ANTI_ALIAS_FLAG);
+            sf.setStyle(Paint.Style.FILL); sf.setColor(0xFFE6B354);
+            cv.drawCircle(s[0], s[1], 8, sf);
+            Paint rg = new Paint(Paint.ANTI_ALIAS_FLAG);
+            rg.setStyle(Paint.Style.STROKE); rg.setStrokeWidth(3); rg.setColor(0xFFFFF3D6);
+            cv.drawCircle(s[0], s[1], 8, rg);
+        } else {
+            float[] s = pt(tn, x1,y1, cnx,cny, x0,y0);
+            Paint glow = new Paint(Paint.ANTI_ALIAS_FLAG);
+            glow.setStyle(Paint.Style.FILL); glow.setColor(0x2EE8F1F8);
+            cv.drawCircle(s[0], s[1], 16, glow);
+            Paint mf = new Paint(Paint.ANTI_ALIAS_FLAG);
+            mf.setStyle(Paint.Style.FILL); mf.setColor(0xFFE8F1F8);
+            cv.drawCircle(s[0], s[1], 7, mf);
+            Paint rg = new Paint(Paint.ANTI_ALIAS_FLAG);
+            rg.setStyle(Paint.Style.STROKE); rg.setStrokeWidth(2); rg.setColor(0xFFFFFFFF);
+            cv.drawCircle(s[0], s[1], 7, rg);
+        }
 
         return bmp;
     }
