@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <!-- ============================================================
      مواقيت الصلاة — السويس | أغسطس–ديسمبر 2026 (نسخة معيارية PWA)
-     v3.1 — تحسين اتجاه النص (bidi).
      v3.2 — تصحيح تسمية الشروق (موعد وليس صلاة).
      v3.3 — إخفاء خط الـ24 ساعة (بدل حذفه لأن app.js يعتمد عليه).
-     v4.1 — قوس الشمس: مسار الشمس + مناطق الكراهة على القوس.
+     v3.5 — الودجت: تاريخ مختصر + فجر الغد.
+     v4.3 — قوس الشمس: دورة كاملة (نهار + ليل) + مناطق الكراهة.
 ============================================================= -->
 <html lang="ar" dir="rtl">
 <head>
@@ -28,19 +28,18 @@
 </header>
 
 <style>
-/* ===== قوس الشمس (v4.1) ===== */
+/* ===== قوس الشمس (v4.2) ===== */
 .sunband{background:linear-gradient(180deg,#0f4d42 0%,#0b3d36 100%);padding:20px 16px 4px;}
 .sunband-in{max-width:1000px;margin:0 auto;}
 .sb-period{font-size:34px;font-weight:800;color:#ffffff;line-height:1.1;}
-.sb-chip{display:inline-block;margin-top:10px;background:rgba(255,255,255,.08);border:1px solid rgba(211,165,69,.35);color:#ffd98a;border-radius:999px;padding:7px 16px;font-size:14px;}
+.sb-chip{display:inline-block;margin-top:10px;background:rgba(255,255,255,.08);border:1px solid rgba(211,165,69,.35);color:#ffd98a;border-radius:999px;padding:7px 16px;font-size:16px;}
 #sbSvg{width:100%;height:auto;display:block;margin-top:6px;}
 .sb-lbl{fill:rgba(255,255,255,.72);font-size:26px;font-weight:700;}
 .sb-dot{fill:#0b3d36;stroke:#d3a545;stroke-width:5;}
-.sb-kseg{stroke:#c46a5a;stroke-width:10;fill:none;opacity:.7;stroke-linecap:round;}
-.sb-karah{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:2px 0 14px;}
-.sb-kpill{background:rgba(196,106,90,.15);border:1px solid rgba(196,106,90,.45);border-radius:999px;padding:4px 12px;font-size:12px;color:#ffab91;}
-.sb-kpill b{color:#ffccbc;font-weight:700;margin-inline-end:4px;}
-/* الكراهة انتقلت إلى القوس — إخفاء الكتلة القديمة */
+.sb-kseg{stroke:#c46a5a;stroke-width:12;fill:none;opacity:1;stroke-linecap:round;}
+.sb-karah{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:2px 0 14px;}
+.sb-kpill{background:rgba(196,106,90,.15);border:1px solid rgba(196,106,90,.45);border-radius:14px;padding:6px 4px;font-size:11px;color:#ffab91;display:flex;flex-direction:column;gap:2px;align-items:center;text-align:center;}
+.sb-kpill b{color:#ffccbc;font-weight:700;font-size:11px;}
 .karah{display:none;}
 </style>
 
@@ -197,7 +196,7 @@
 })();
 </script>
 <script>
-/* v3.4: إرسال المواقيت إلى ودجت الشاشة الرئيسية (عبر WidgetBridge) */
+/* v3.5: إرسال المواقيت إلى ودجت الشاشة الرئيسية (عبر WidgetBridge) */
 (function(){
   function to24(t, p){
     var m = (t || '').match(/(\d{1,2}):(\d{2})/);
@@ -226,11 +225,21 @@
       if(b && s) karaha.push({ name: b.textContent.trim(), range: s.textContent.trim() });
     });
     var lbl = document.getElementById('todayLabel');
+    var fajrTomorrow = null;
+    var tb = document.getElementById('tbody');
+    if (tb) {
+      var row = tb.children[new Date().getDate()] || tb.children[new Date().getDate()-1];
+      var cell = row && row.children[3];
+      var b = cell && cell.querySelector('bdi');
+      var s = cell && cell.querySelector('small');
+      if (b) fajrTomorrow = to24(b.textContent, s ? s.textContent : '');
+    }
     return {
       day: new Date().toISOString().slice(0,10),
-      dateLabel: lbl ? lbl.textContent.trim() : '',
+      dateLabel: lbl ? lbl.textContent.trim().replace(/^مدينة السويس — /,'') : '',
       prayers: prayers,
-      karaha: karaha
+      karaha: karaha,
+      fajrTomorrow: fajrTomorrow
     };
   }
   function send(){
