@@ -44,16 +44,22 @@
 .karah{display:none;}
 </style>
 
-<section class="sunband" aria-label="مسار الشمس اليوم">
+<section class="sunband" aria-label="مسار الشمس والقمر">
   <div class="sunband-in">
     <div class="sb-period" id="sbPeriod">—</div>
     <div class="sb-chip" id="sbChip">—</div>
-    <svg id="sbSvg" viewBox="0 0 1000 430" preserveAspectRatio="xMidYMid meet">
-      <line x1="40" y1="360" x2="960" y2="360" stroke="rgba(255,255,255,.12)" stroke-width="2" stroke-dasharray="4 10"/>
+    <svg id="sbSvg" viewBox="0 0 1000 560" preserveAspectRatio="xMidYMid meet">
+      <line x1="40" y1="340" x2="960" y2="340" stroke="rgba(255,255,255,.12)" stroke-width="2" stroke-dasharray="4 10"/>
+      <path id="sbArcN" fill="none" stroke="rgba(255,255,255,.10)" stroke-width="4" stroke-linecap="round" stroke-dasharray="2 10"/>
+      <path id="sbProgN" fill="none" stroke="#bfd8e0" stroke-width="6" stroke-linecap="round"/>
       <path id="sbArc" fill="none" stroke="rgba(255,255,255,.16)" stroke-width="4" stroke-linecap="round"/>
       <path id="sbProg" fill="none" stroke="#d3a545" stroke-width="7" stroke-linecap="round"/>
       <g id="sbKseg"></g>
       <g id="sbDots"></g>
+      <g id="sbMoon" opacity="0">
+        <circle r="22" fill="rgba(232,241,248,.18)"/>
+        <circle r="9" fill="#e8f1f8" stroke="#ffffff" stroke-width="2"/>
+      </g>
       <g id="sbSun">
         <circle r="26" fill="rgba(211,165,69,.22)"/>
         <circle r="11" fill="#e6b354" stroke="#fff3d6" stroke-width="3"/>
