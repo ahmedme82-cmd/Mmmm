@@ -2,11 +2,13 @@
    Service Worker — تحميل فوري + تخزين الخطوط والأيقونات + تحديث
    عند نشر نسخة جديدة: غيّر CACHE_VERSION ليظهر زر «تحديث الآن».
 ============================================================ */
-const CACHE_VERSION = 'mawaqit-v1';
+const CACHE_VERSION = 'mawaqit-v2';
 const CORE = [
   './','index.html','styles.css','fonts.css',
   'prayer-data.js','utils.js','data.js','ui.js','table.js',
-  'karah.js','timeline.js','clock.js','pwa.js','app.js'
+  'karah.js','timeline.js','clock.js','pwa.js','app.js',
+  'fonts/arabic-400-normal.woff2','fonts/arabic-600-normal.woff2','fonts/arabic-700-normal.woff2','fonts/arabic-900-normal.woff2',
+  'fonts/latin-400-normal.woff2','fonts/latin-600-normal.woff2','fonts/latin-700-normal.woff2','fonts/latin-900-normal.woff2'
 ];
 
 self.addEventListener('install', e => {

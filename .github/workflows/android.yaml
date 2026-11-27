@@ -34,6 +34,7 @@ jobs:
           cp index.html styles.css fonts.css sw.js \
              prayer-data.js utils.js data.js ui.js table.js \
              karah.js timeline.js clock.js pwa.js app.js dist/
+          cp -r fonts dist/
 
       - name: Add Android platform (first run only — then saves it to the repo)
         run: |
