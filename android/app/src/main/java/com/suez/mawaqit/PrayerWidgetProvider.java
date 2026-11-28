@@ -86,7 +86,7 @@ public class PrayerWidgetProvider extends AppWidgetProvider {
             views.setTextViewText(R.id.widgetCountdown, "افتح التطبيق لتحميل المواقيت");
             for (int i = 0; i < ORDER.length; i++) {
                 views.setTextViewText(timeIds[i], "—");
-                views.setInt(cellIds[i], "setBackgroundResource", android.R.color.transparent);
+                views.setInt(cellIds[i], "setBackgroundResource", 0);
             }
             mgr.updateAppWidget(id, views);
             return;
@@ -158,7 +158,7 @@ public class PrayerWidgetProvider extends AppWidgetProvider {
                         disp != null && !stripPeriod(disp).isEmpty() ? stripPeriod(disp) : "—");
                 views.setInt(cellIds[i], "setBackgroundResource",
                         ORDER[i].equals(highlight) ? R.drawable.widget_cell_next
-                                                  : android.R.color.transparent);
+                                                  : 0);
             }
         } catch (Exception e) {
             views.setTextViewText(R.id.widgetCountdown, "تعذر قراءة البيانات");
