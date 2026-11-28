@@ -1,45 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:layoutDirection="rtl"
     android:background="@drawable/widget_bg"
-    android:padding="10dp">
+    android:padding="14dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
-
-        <ImageView
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:src="@drawable/widget_moon"
-            android:contentDescription="مواقيت الصلاة" />
+        android:orientation="horizontal">
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical"
-            android:layout_marginStart="8dp">
+            android:orientation="vertical">
 
             <TextView
-                android:id="@+id/widgetTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="مواقيت الصلاة — السويس"
-                android:textColor="#d3a545"
+                android:text="الصلاة القادمة"
+                android:textColor="@color/widget_muted"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/widgetNextName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/widget_teal"
                 android:textStyle="bold"
-                android:textSize="13sp" />
-
-            <TextView
-                android:id="@+id/widgetDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="#B3FFFFFF"
-                android:textSize="9sp"
+                android:textSize="26sp"
                 android:maxLines="1"
                 android:ellipsize="end" />
         </LinearLayout>
@@ -48,62 +40,33 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:gravity="center"
-            android:background="@drawable/widget_cell_next"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp">
+            android:gravity="end|center_vertical"
+            android:layout_marginStart="10dp">
 
             <TextView
-                android:id="@+id/widgetNextName"
+                android:id="@+id/widgetNextTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#ffd98a"
+                android:textColor="@color/widget_ink"
                 android:textStyle="bold"
-                android:textSize="10sp" />
+                android:textSize="22sp" />
 
             <TextView
                 android:id="@+id/widgetCountdown"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/widget_gold"
                 android:textStyle="bold"
-                android:textSize="18sp" />
+                android:textSize="12sp" />
         </LinearLayout>
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/widgetArc"
+    <View
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
-        android:scaleType="fitCenter"
-        android:layout_marginTop="4dp" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_marginTop="2dp">
-
-        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="فجر" android:textColor="#d3a545" android:textSize="10sp" />
-            <TextView android:id="@+id/tFajr" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#FFFFFF" android:textStyle="bold" android:textSize="13sp" />
-        </LinearLayout>
-
-        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="شروق" android:textColor="#d3a545" android:textSize="10sp" />
-            <TextView android:id="@+id/tShuruq" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#FFFFFF" android:textStyle="bold" android:textSize="13sp" />
-        </LinearLayout>
-
-        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="ظهر" android:textColor="#d3a545" android:textSize="10sp" />
-            <TextView android:id="@+id/tDhuhr" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#FFFFFF" android:textStyle="bold" android:textSize="13sp" />
-        </LinearLayout>
-    </LinearLayout>
+        android:layout_height="1dp"
+        android:background="@color/widget_line"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="6dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -112,42 +75,172 @@
         android:orientation="horizontal"
         android:gravity="center">
 
-        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="عصر" android:textColor="#d3a545" android:textSize="10sp" />
-            <TextView android:id="@+id/tAsr" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#FFFFFF" android:textStyle="bold" android:textSize="13sp" />
+        <LinearLayout
+            android:id="@+id/cFajr"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="2dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="فجر"
+                android:textColor="@color/widget_gold"
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/tFajr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/widget_ink"
+                android:textStyle="bold"
+                android:textSize="12sp" />
         </LinearLayout>
 
-        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="مغرب" android:textColor="#d3a545" android:textSize="10sp" />
-            <TextView android:id="@+id/tMaghrib" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#FFFFFF" android:textStyle="bold" android:textSize="13sp" />
+        <LinearLayout
+            android:id="@+id/cShuruq"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="2dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="شروق"
+                android:textColor="@color/widget_gold"
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/tShuruq"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/widget_ink"
+                android:textStyle="bold"
+                android:textSize="12sp" />
         </LinearLayout>
 
-        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="عشاء" android:textColor="#d3a545" android:textSize="10sp" />
-            <TextView android:id="@+id/tIsha" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#FFFFFF" android:textStyle="bold" android:textSize="13sp" />
+        <LinearLayout
+            android:id="@+id/cDhuhr"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="2dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ظهر"
+                android:textColor="@color/widget_gold"
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/tDhuhr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/widget_ink"
+                android:textStyle="bold"
+                android:textSize="12sp" />
         </LinearLayout>
-    </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_marginTop="4dp">
+        <LinearLayout
+            android:id="@+id/cAsr"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="2dp">
 
-        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
-            <TextView android:id="@+id/k1n" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#ffab91" android:textSize="9sp" />
-            <TextView android:id="@+id/k1r" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#CCFFFFFF" android:textSize="9sp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="عصر"
+                android:textColor="@color/widget_gold"
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/tAsr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/widget_ink"
+                android:textStyle="bold"
+                android:textSize="12sp" />
         </LinearLayout>
 
-        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
-            <TextView android:id="@+id/k2n" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#ffab91" android:textSize="9sp" />
-            <TextView android:id="@+id/k2r" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#CCFFFFFF" android:textSize="9sp" />
+        <LinearLayout
+            android:id="@+id/cMaghrib"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="2dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="مغرب"
+                android:textColor="@color/widget_gold"
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/tMaghrib"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/widget_ink"
+                android:textStyle="bold"
+                android:textSize="12sp" />
         </LinearLayout>
 
-        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
-            <TextView android:id="@+id/k3n" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#ffab91" android:textSize="9sp" />
-            <TextView android:id="@+id/k3r" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#CCFFFFFF" android:textSize="9sp" />
+        <LinearLayout
+            android:id="@+id/cIsha"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="2dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="عشاء"
+                android:textColor="@color/widget_gold"
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/tIsha"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/widget_ink"
+                android:textStyle="bold"
+                android:textSize="12sp" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>
