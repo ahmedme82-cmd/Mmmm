@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ودجت «سماء السويس» — ألوان الوضع الداكن (من لوحة v2) -->
+    <color name="widget_card">#0f1d1b</color>
+    <color name="widget_ink">#eaf2ee</color>
+    <color name="widget_muted">#9fb6af</color>
+    <color name="widget_teal">#eaf2ee</color>
+    <color name="widget_gold">#e3b75a</color>
+    <color name="widget_gold_soft">#2a2410</color>
+    <color name="widget_line">#223a36</color>
+</resources>
